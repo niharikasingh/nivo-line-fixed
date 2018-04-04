@@ -1,226 +1,279 @@
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+'use strict';
 
-/*
- * This file is part of the nivo project.
- *
- * Copyright 2016-present, Raphaël Benitte.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-import React from 'react';
-import { sortBy } from 'lodash';
-import { area, line } from 'd3-shape';
-import compose from 'recompose/compose';
-import pure from 'recompose/pure';
-import withPropsOnChange from 'recompose/withPropsOnChange';
-import defaultProps from 'recompose/defaultProps';
-import { curveFromProp } from '@nivo/core';
-import { getInheritedColorGenerator } from '@nivo/core';
-import { withTheme, withColors, withDimensions, withMotion } from '@nivo/core';
-import { Container, SvgWrapper } from '@nivo/core';
-import { getScales, getStackedScales, generateLines, generateStackedLines } from './compute';
-import { CartesianMarkers } from '@nivo/core';
-import { Axes, Grid } from '@nivo/core';
-import { BoxLegendSvg } from '@nivo/legends';
-import LineAreas from './LineAreas';
-import LineLines from './LineLines';
-import LineSlices from './LineSlices';
-import LineDots from './LineDots';
-import { LinePropTypes, LineDefaultProps } from './props';
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 
-const Line = ({
-    lines,
-    lineGenerator,
-    areaGenerator,
-    xScale,
-    yScale,
-    slices,
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /*
+                                                                                                                                                                                                                                                                   * This file is part of the nivo project.
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * Copyright 2016-present, Raphaël Benitte.
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * For the full copyright and license information, please view the LICENSE
+                                                                                                                                                                                                                                                                   * file that was distributed with this source code.
+                                                                                                                                                                                                                                                                   */
 
-    // dimensions
-    margin,
-    width,
-    height,
-    outerWidth,
-    outerHeight,
 
-    // axes & grid
-    axisTop,
-    axisRight,
-    axisBottom,
-    axisLeft,
-    enableGridX,
-    enableGridY,
+var _react = require('react');
 
-    lineWidth,
-    enableArea,
-    areaOpacity,
+var _react2 = _interopRequireDefault(_react);
 
-    // dots
-    enableDots,
-    dotSymbol,
-    dotSize,
-    dotColor,
-    dotBorderWidth,
-    dotBorderColor,
-    enableDotLabel,
-    dotLabel,
-    dotLabelFormat,
-    dotLabelYOffset,
+var _lodash = require('lodash');
 
-    // markers
-    markers,
+var _d3Shape = require('d3-shape');
 
-    // theming
-    theme,
+var _compose = require('recompose/compose');
 
-    // motion
-    animate,
-    motionStiffness,
-    motionDamping,
+var _compose2 = _interopRequireDefault(_compose);
 
-    // interactivity
-    isInteractive,
-    tooltipFormat,
+var _pure = require('recompose/pure');
 
-    // stackTooltip
-    enableStackTooltip,
+var _pure2 = _interopRequireDefault(_pure);
 
-    legends
-}) => {
-    const motionProps = {
-        animate,
-        motionDamping,
-        motionStiffness
+var _withPropsOnChange = require('recompose/withPropsOnChange');
+
+var _withPropsOnChange2 = _interopRequireDefault(_withPropsOnChange);
+
+var _defaultProps = require('recompose/defaultProps');
+
+var _defaultProps2 = _interopRequireDefault(_defaultProps);
+
+var _core = require('@nivo/core');
+
+var _compute = require('./compute');
+
+var _legends = require('@nivo/legends');
+
+var _LineAreas = require('./LineAreas');
+
+var _LineAreas2 = _interopRequireDefault(_LineAreas);
+
+var _LineLines = require('./LineLines');
+
+var _LineLines2 = _interopRequireDefault(_LineLines);
+
+var _LineSlices = require('./LineSlices');
+
+var _LineSlices2 = _interopRequireDefault(_LineSlices);
+
+var _LineDots = require('./LineDots');
+
+var _LineDots2 = _interopRequireDefault(_LineDots);
+
+var _props = require('./props');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Line = function Line(_ref) {
+    var lines = _ref.lines,
+        lineGenerator = _ref.lineGenerator,
+        areaGenerator = _ref.areaGenerator,
+        xScale = _ref.xScale,
+        yScale = _ref.yScale,
+        slices = _ref.slices,
+        margin = _ref.margin,
+        width = _ref.width,
+        height = _ref.height,
+        outerWidth = _ref.outerWidth,
+        outerHeight = _ref.outerHeight,
+        axisTop = _ref.axisTop,
+        axisRight = _ref.axisRight,
+        axisBottom = _ref.axisBottom,
+        axisLeft = _ref.axisLeft,
+        enableGridX = _ref.enableGridX,
+        enableGridY = _ref.enableGridY,
+        lineWidth = _ref.lineWidth,
+        enableArea = _ref.enableArea,
+        areaOpacity = _ref.areaOpacity,
+        enableDots = _ref.enableDots,
+        dotSymbol = _ref.dotSymbol,
+        dotSize = _ref.dotSize,
+        dotColor = _ref.dotColor,
+        dotBorderWidth = _ref.dotBorderWidth,
+        dotBorderColor = _ref.dotBorderColor,
+        enableDotLabel = _ref.enableDotLabel,
+        dotLabel = _ref.dotLabel,
+        dotLabelFormat = _ref.dotLabelFormat,
+        dotLabelYOffset = _ref.dotLabelYOffset,
+        markers = _ref.markers,
+        theme = _ref.theme,
+        animate = _ref.animate,
+        motionStiffness = _ref.motionStiffness,
+        motionDamping = _ref.motionDamping,
+        isInteractive = _ref.isInteractive,
+        tooltipFormat = _ref.tooltipFormat,
+        enableStackTooltip = _ref.enableStackTooltip,
+        legends = _ref.legends;
+
+    var motionProps = {
+        animate: animate,
+        motionDamping: motionDamping,
+        motionStiffness: motionStiffness
     };
 
-    return React.createElement(
-        Container,
+    return _react2.default.createElement(
+        _core.Container,
         { isInteractive: isInteractive, theme: theme },
-        ({ showTooltip, hideTooltip }) => React.createElement(
-            SvgWrapper,
-            { width: outerWidth, height: outerHeight, margin: margin },
-            React.createElement(Grid, _extends({
-                theme: theme,
-                width: width,
-                height: height,
-                xScale: enableGridX ? xScale : null,
-                yScale: enableGridY ? yScale : null
-            }, motionProps)),
-            React.createElement(CartesianMarkers, {
-                markers: markers,
-                width: width,
-                height: height,
-                xScale: xScale,
-                yScale: yScale,
-                theme: theme
-            }),
-            React.createElement(Axes, _extends({
-                xScale: xScale,
-                yScale: yScale,
-                width: width,
-                height: height,
-                theme: theme,
-                top: axisTop,
-                right: axisRight,
-                bottom: axisBottom,
-                left: axisLeft
-            }, motionProps)),
-            enableArea && React.createElement(LineAreas, _extends({
-                areaGenerator: areaGenerator,
-                areaOpacity: areaOpacity,
-                lines: lines
-            }, motionProps)),
-            React.createElement(LineLines, _extends({
-                lines: lines,
-                lineGenerator: lineGenerator,
-                lineWidth: lineWidth
-            }, motionProps)),
-            isInteractive && enableStackTooltip && React.createElement(LineSlices, {
-                slices: slices,
-                height: height,
-                showTooltip: showTooltip,
-                hideTooltip: hideTooltip,
-                theme: theme,
-                tooltipFormat: tooltipFormat
-            }),
-            enableDots && React.createElement(LineDots, _extends({
-                lines: lines,
-                symbol: dotSymbol,
-                size: dotSize,
-                color: getInheritedColorGenerator(dotColor),
-                borderWidth: dotBorderWidth,
-                borderColor: getInheritedColorGenerator(dotBorderColor),
-                enableLabel: enableDotLabel,
-                label: dotLabel,
-                labelFormat: dotLabelFormat,
-                labelYOffset: dotLabelYOffset,
-                theme: theme
-            }, motionProps)),
-            legends.map((legend, i) => {
-                const legendData = lines.map(line => ({
-                    label: line.id,
-                    fill: line.color
-                })).reverse();
+        function (_ref2) {
+            var showTooltip = _ref2.showTooltip,
+                hideTooltip = _ref2.hideTooltip;
+            return _react2.default.createElement(
+                _core.SvgWrapper,
+                { width: outerWidth, height: outerHeight, margin: margin },
+                _react2.default.createElement(_core.Grid, _extends({
+                    theme: theme,
+                    width: width,
+                    height: height,
+                    xScale: enableGridX ? xScale : null,
+                    yScale: enableGridY ? yScale : null
+                }, motionProps)),
+                _react2.default.createElement(_core.CartesianMarkers, {
+                    markers: markers,
+                    width: width,
+                    height: height,
+                    xScale: xScale,
+                    yScale: yScale,
+                    theme: theme
+                }),
+                _react2.default.createElement(_core.Axes, _extends({
+                    xScale: xScale,
+                    yScale: yScale,
+                    width: width,
+                    height: height,
+                    theme: theme,
+                    top: axisTop,
+                    right: axisRight,
+                    bottom: axisBottom,
+                    left: axisLeft
+                }, motionProps)),
+                enableArea && _react2.default.createElement(_LineAreas2.default, _extends({
+                    areaGenerator: areaGenerator,
+                    areaOpacity: areaOpacity,
+                    lines: lines
+                }, motionProps)),
+                _react2.default.createElement(_LineLines2.default, _extends({
+                    lines: lines,
+                    lineGenerator: lineGenerator,
+                    lineWidth: lineWidth
+                }, motionProps)),
+                isInteractive && enableStackTooltip && _react2.default.createElement(_LineSlices2.default, {
+                    slices: slices,
+                    height: height,
+                    showTooltip: showTooltip,
+                    hideTooltip: hideTooltip,
+                    theme: theme,
+                    tooltipFormat: tooltipFormat
+                }),
+                enableDots && _react2.default.createElement(_LineDots2.default, _extends({
+                    lines: lines,
+                    symbol: dotSymbol,
+                    size: dotSize,
+                    color: (0, _core.getInheritedColorGenerator)(dotColor),
+                    borderWidth: dotBorderWidth,
+                    borderColor: (0, _core.getInheritedColorGenerator)(dotBorderColor),
+                    enableLabel: enableDotLabel,
+                    label: dotLabel,
+                    labelFormat: dotLabelFormat,
+                    labelYOffset: dotLabelYOffset,
+                    theme: theme
+                }, motionProps)),
+                legends.map(function (legend, i) {
+                    var legendData = lines.map(function (line) {
+                        return {
+                            label: line.id,
+                            fill: line.color
+                        };
+                    }).reverse();
 
-                return React.createElement(BoxLegendSvg, _extends({
-                    key: i
-                }, legend, {
-                    containerWidth: width,
-                    containerHeight: height,
-                    data: legendData
-                }));
-            })
-        )
+                    return _react2.default.createElement(_legends.BoxLegendSvg, _extends({
+                        key: i
+                    }, legend, {
+                        containerWidth: width,
+                        containerHeight: height,
+                        data: legendData
+                    }));
+                })
+            );
+        }
     );
 };
 
-Line.propTypes = LinePropTypes;
+Line.propTypes = _props.LinePropTypes;
 
-const enhance = compose(defaultProps(LineDefaultProps), withTheme(), withColors(), withDimensions(), withMotion(), withPropsOnChange(['curve', 'height'], ({ curve, height }) => ({
-    areaGenerator: area().x(d => d.x).y0(height).y1(d => d.y).curve(curveFromProp(curve)),
-    lineGenerator: line().defined(d => d.value !== null).x(d => d.x).y(d => d.y).curve(curveFromProp(curve))
-})), withPropsOnChange(['data', 'stacked', 'width', 'height', 'minY', 'maxY'], ({ data, stacked, width, height, margin, minY, maxY }) => {
-    let scales;
-    const args = { data, width, height, minY, maxY };
+var enhance = (0, _compose2.default)((0, _defaultProps2.default)(_props.LineDefaultProps), (0, _core.withTheme)(), (0, _core.withColors)(), (0, _core.withDimensions)(), (0, _core.withMotion)(), (0, _withPropsOnChange2.default)(['curve', 'height'], function (_ref3) {
+    var curve = _ref3.curve,
+        height = _ref3.height;
+    return {
+        areaGenerator: (0, _d3Shape.area)().x(function (d) {
+            return d.x;
+        }).y0(height).y1(function (d) {
+            return d.y;
+        }).curve((0, _core.curveFromProp)(curve)),
+        lineGenerator: (0, _d3Shape.line)().defined(function (d) {
+            return d.value !== null;
+        }).x(function (d) {
+            return d.x;
+        }).y(function (d) {
+            return d.y;
+        }).curve((0, _core.curveFromProp)(curve))
+    };
+}), (0, _withPropsOnChange2.default)(['data', 'stacked', 'width', 'height', 'minY', 'maxY'], function (_ref4) {
+    var data = _ref4.data,
+        stacked = _ref4.stacked,
+        width = _ref4.width,
+        height = _ref4.height,
+        margin = _ref4.margin,
+        minY = _ref4.minY,
+        maxY = _ref4.maxY;
+
+    var scales = void 0;
+    var args = { data: data, width: width, height: height, minY: minY, maxY: maxY };
     if (stacked === true) {
-        scales = getStackedScales(args);
+        scales = (0, _compute.getStackedScales)(args);
     } else {
-        scales = getScales(args);
+        scales = (0, _compute.getScales)(args);
     }
 
     return _extends({
-        margin,
-        width,
-        height
+        margin: margin,
+        width: width,
+        height: height
     }, scales);
-}), withPropsOnChange(['getColor', 'xScale', 'yScale'], ({ data, stacked, xScale, yScale, getColor }) => {
-    let lines;
+}), (0, _withPropsOnChange2.default)(['getColor', 'xScale', 'yScale'], function (_ref5) {
+    var data = _ref5.data,
+        stacked = _ref5.stacked,
+        xScale = _ref5.xScale,
+        yScale = _ref5.yScale,
+        getColor = _ref5.getColor;
+
+    var lines = void 0;
     if (stacked === true) {
-        lines = generateStackedLines(data, xScale, yScale, getColor);
+        lines = (0, _compute.generateStackedLines)(data, xScale, yScale, getColor);
     } else {
-        lines = generateLines(data, xScale, yScale, getColor);
+        lines = (0, _compute.generateLines)(data, xScale, yScale, getColor);
     }
 
-    const slices = xScale.domain().map((id, i) => {
-        let points = sortBy(lines.map(line => ({
-            id: line.id,
-            value: line.points[i].value,
-            y: line.points[i].y,
-            color: line.color
-        })), 'y');
+    var slices = xScale.domain().map(function (id, i) {
+        var points = (0, _lodash.sortBy)(lines.map(function (line) {
+            return {
+                id: line.id,
+                value: line.points[i].value,
+                y: line.points[i].y,
+                color: line.color
+            };
+        }), 'y');
 
         return {
-            id,
+            id: id,
             x: xScale(id),
-            points
+            points: points
         };
     });
 
-    return { lines, slices };
-}), pure);
+    return { lines: lines, slices: slices };
+}), _pure2.default);
 
-const enhancedLine = enhance(Line);
+var enhancedLine = enhance(Line);
 enhancedLine.displayName = 'enhance(Line)';
 
-export default enhancedLine;
+exports.default = enhancedLine;

@@ -1,13 +1,23 @@
-/*
- * This file is part of the nivo project.
- *
- * Copyright 2016-present, Raphaël Benitte.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-import { range, min, max, maxBy, sumBy, uniq } from 'lodash';
-import { scalePoint, scaleLinear } from 'd3-scale';
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.generateStackedLines = exports.generateLines = exports.getScales = exports.getStackedScales = exports.getStackedYScale = exports.getYScale = exports.getXScale = undefined;
+
+var _lodash = require('lodash');
+
+var _d3Scale = require('d3-scale');
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } } /*
+                                                                                                                                                                                                     * This file is part of the nivo project.
+                                                                                                                                                                                                     *
+                                                                                                                                                                                                     * Copyright 2016-present, Raphaël Benitte.
+                                                                                                                                                                                                     *
+                                                                                                                                                                                                     * For the full copyright and license information, please view the LICENSE
+                                                                                                                                                                                                     * file that was distributed with this source code.
+                                                                                                                                                                                                     */
+
 
 /**
  * Generates X scale.
@@ -16,13 +26,19 @@ import { scalePoint, scaleLinear } from 'd3-scale';
  * @param {number}         width
  * @returns {Function}
  */
-export const getXScale = (data, width) => {
-    const xLengths = uniq(data.map(({ data }) => data.length));
+var getXScale = exports.getXScale = function getXScale(data, width) {
+    var xLengths = (0, _lodash.uniq)(data.map(function (_ref) {
+        var data = _ref.data;
+        return data.length;
+    }));
     if (xLengths.length > 1) {
-        throw new Error([`Found inconsitent data for x,`, `expecting all series to have same length`, `but found: ${xLengths.join(', ')}`].join(' '));
+        throw new Error(['Found inconsitent data for x,', 'expecting all series to have same length', 'but found: ' + xLengths.join(', ')].join(' '));
     }
 
-    return scalePoint().range([0, width]).domain(data[0].data.map(({ x }) => x));
+    return (0, _d3Scale.scalePoint)().range([0, width]).domain(data[0].data.map(function (_ref2) {
+        var x = _ref2.x;
+        return x;
+    }));
 };
 
 /**
@@ -34,18 +50,26 @@ export const getXScale = (data, width) => {
  * @param {number|string}  maxValue
  * @returns {Function}
  */
-export const getYScale = (data, height, minValue, maxValue) => {
-    let minY = minValue;
+var getYScale = exports.getYScale = function getYScale(data, height, minValue, maxValue) {
+    var minY = minValue;
     if (minValue === 'auto') {
-        minY = min(data.map(serie => min(serie.data.map(d => d.y))));
+        minY = (0, _lodash.min)(data.map(function (serie) {
+            return (0, _lodash.min)(serie.data.map(function (d) {
+                return d.y;
+            }));
+        }));
     }
 
-    let maxY = maxValue;
+    var maxY = maxValue;
     if (maxValue === 'auto') {
-        maxY = max(data.map(serie => max(serie.data.map(d => d.y))));
+        maxY = (0, _lodash.max)(data.map(function (serie) {
+            return (0, _lodash.max)(serie.data.map(function (d) {
+                return d.y;
+            }));
+        }));
     }
 
-    return scaleLinear().rangeRound([height, 0]).domain([minY, maxY]);
+    return (0, _d3Scale.scaleLinear)().rangeRound([height, 0]).domain([minY, maxY]);
 };
 
 /**
@@ -58,18 +82,26 @@ export const getYScale = (data, height, minValue, maxValue) => {
  * @param {number|string}  maxValue
  * @returns {Function}
  */
-export const getStackedYScale = (data, xScale, height, minValue, maxValue) => {
-    let minY = minValue;
+var getStackedYScale = exports.getStackedYScale = function getStackedYScale(data, xScale, height, minValue, maxValue) {
+    var minY = minValue;
     if (minValue === 'auto') {
-        minY = min(data.map(serie => min(serie.data.map(d => d.y))));
+        minY = (0, _lodash.min)(data.map(function (serie) {
+            return (0, _lodash.min)(serie.data.map(function (d) {
+                return d.y;
+            }));
+        }));
     }
 
-    let maxY = maxValue;
+    var maxY = maxValue;
     if (maxValue === 'auto') {
-        maxY = max(range(xScale.domain().length).map(i => sumBy(data, serie => serie.data[i].y)));
+        maxY = (0, _lodash.max)((0, _lodash.range)(xScale.domain().length).map(function (i) {
+            return (0, _lodash.sumBy)(data, function (serie) {
+                return serie.data[i].y;
+            });
+        }));
     }
 
-    return scaleLinear().rangeRound([height, 0]).domain([minY, maxY]);
+    return (0, _d3Scale.scaleLinear)().rangeRound([height, 0]).domain([minY, maxY]);
 };
 
 /**
@@ -82,11 +114,17 @@ export const getStackedYScale = (data, xScale, height, minValue, maxValue) => {
  * @param {number|string} maxY
  * @return {{ xScale: Function, yScale: Function }}
  */
-export const getStackedScales = ({ data, width, height, minY, maxY }) => {
-    const xScale = getXScale(data, width);
-    const yScale = getStackedYScale(data, xScale, height, minY, maxY);
+var getStackedScales = exports.getStackedScales = function getStackedScales(_ref3) {
+    var data = _ref3.data,
+        width = _ref3.width,
+        height = _ref3.height,
+        minY = _ref3.minY,
+        maxY = _ref3.maxY;
 
-    return { xScale, yScale };
+    var xScale = getXScale(data, width);
+    var yScale = getStackedYScale(data, xScale, height, minY, maxY);
+
+    return { xScale: xScale, yScale: yScale };
 };
 
 /**
@@ -99,11 +137,17 @@ export const getStackedScales = ({ data, width, height, minY, maxY }) => {
  * @param {number|string} maxY
  * @return {{ xScale: Function, yScale: Function }}
  */
-export const getScales = ({ data, width, height, minY, maxY }) => {
-    const xScale = getXScale(data, width);
-    const yScale = getYScale(data, height, minY, maxY);
+var getScales = exports.getScales = function getScales(_ref4) {
+    var data = _ref4.data,
+        width = _ref4.width,
+        height = _ref4.height,
+        minY = _ref4.minY,
+        maxY = _ref4.maxY;
 
-    return { xScale, yScale };
+    var xScale = getXScale(data, width);
+    var yScale = getYScale(data, height, minY, maxY);
+
+    return { xScale: xScale, yScale: yScale };
 };
 
 /**
@@ -115,20 +159,26 @@ export const getScales = ({ data, width, height, minY, maxY }) => {
  * @param {Function}       color
  * @return {{ xScale: Function, yScale: Function, lines: Array.<Object> }}
  */
-export const generateLines = (data, xScale, yScale, color) => data.map(serie => {
-    const { id, data: serieData } = serie;
+var generateLines = exports.generateLines = function generateLines(data, xScale, yScale, color) {
+    return data.map(function (serie) {
+        var id = serie.id,
+            serieData = serie.data;
 
-    return {
-        id,
-        color: color(serie),
-        data: serie,
-        points: serieData.map(d => Object.assign({}, d, {
-            value: d.y,
-            x: xScale(d.x),
-            y: yScale(d.y)
-        }))
-    };
-});
+
+        return {
+            id: id,
+            color: color(serie),
+            data: serie,
+            points: serieData.map(function (d) {
+                return Object.assign({}, d, {
+                    value: d.y,
+                    x: xScale(d.x),
+                    y: yScale(d.y)
+                });
+            })
+        };
+    });
+};
 
 /**
  * Generates x/y scales & lines for stacked line chart.
@@ -139,35 +189,41 @@ export const generateLines = (data, xScale, yScale, color) => data.map(serie => 
  * @param {Function}       color
  * @return {{ xScale: Function, yScale: Function, lines: Array.<Object> }}
  */
-export const generateStackedLines = (data, xScale, yScale, color) => data.reduce((acc, serie, serieIndex) => {
-    const previousPoints = serieIndex === 0 ? null : acc[serieIndex - 1].points;
+var generateStackedLines = exports.generateStackedLines = function generateStackedLines(data, xScale, yScale, color) {
+    return data.reduce(function (acc, serie, serieIndex) {
+        var previousPoints = serieIndex === 0 ? null : acc[serieIndex - 1].points;
 
-    const { id, data: serieData } = serie;
+        var id = serie.id,
+            serieData = serie.data;
 
-    return [...acc, {
-        id,
-        color: color(serie),
-        data: serie,
-        points: serieData.map((d, i) => {
-            if (!previousPoints) {
+
+        return [].concat(_toConsumableArray(acc), [{
+            id: id,
+            color: color(serie),
+            data: serie,
+            points: serieData.map(function (d, i) {
+                if (!previousPoints) {
+                    return Object.assign({}, d, {
+                        value: d.y,
+                        x: d.x,
+                        y: d.y
+                    });
+                }
+
                 return Object.assign({}, d, {
                     value: d.y,
                     x: d.x,
-                    y: d.y
+                    y: d.y + previousPoints[i].accY
                 });
-            }
-
-            return Object.assign({}, d, {
-                value: d.y,
-                x: d.x,
-                y: d.y + previousPoints[i].accY
-            });
-        }).map(d => ({
-            key: d.x,
-            value: d.value,
-            accY: d.y,
-            x: xScale(d.x),
-            y: yScale(d.y)
-        }))
-    }];
-}, []);
+            }).map(function (d) {
+                return {
+                    key: d.x,
+                    value: d.value,
+                    accY: d.y,
+                    x: xScale(d.x),
+                    y: yScale(d.y)
+                };
+            })
+        }]);
+    }, []);
+};
